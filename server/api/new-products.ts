@@ -1,4 +1,4 @@
-import { Product } from "~/models/product.module";
+import { Product } from "~/models/product.model";
 
 const getNewProducts = (products: Product[]) => {
   return products

@@ -1,7 +1,3 @@
-<script setup>
-  const { data } = await useFetch('/api/new-products');
-</script>
-
 <template>
   <section class="slider swiper-container">
     <div class="swiper-wrapper">
@@ -88,11 +84,7 @@
           </p>
           <button class="button">
             <span class="button-text">View all</span>
-            <img
-              src="/images/arrow.svg"
-              alt="icon: arrow"
-              class="button-icon"
-            />
+            <img src="/images/arrow.svg" alt="icon: arrow" class="button-icon" />
           </button>
         </div>
       </div>
@@ -106,11 +98,7 @@
           </p>
           <button class="button">
             <span class="button-text">View all</span>
-            <img
-              src="/images/arrow.svg"
-              alt="icon: arrow"
-              class="button-icon"
-            />
+            <img src="/images/arrow.svg" alt="icon: arrow" class="button-icon" />
           </button>
         </div>
       </div>
@@ -143,29 +131,22 @@
         <h2 class="section-title">New Arrival</h2>
       </div>
       <div class="col-3 d-flex justify-content-end">
-        <NuxtLink
-          :to="{
-            path: '/products',
-            query: { field: 'label', name: 'New' },
-          }"
-          class="more"
-        >
+        <NuxtLink :to="{
+          path: '/products',
+          query: { field: 'label', name: 'New' },
+        }" class="more">
           View All
         </NuxtLink>
       </div>
     </div>
     <div class="short-goods row">
-      <div
-        class="col-lg-3 col-sm-6"
-        v-for="card in data"
-        :key="card.id"
-      >
+      <div class="col-lg-3 col-sm-6" v-for="card in data" :key="card.id">
         <div class="goods-card">
-          <span class="label">{{ card.label.toUpperCase() }}</span>
+          <span class="label">{{ titleFormat(card.label) }}</span>
           <img :src="card.img" :alt="card.name" class="goods-image" />
           <h3 class="goods-title">{{ card.name }}</h3>
           <p class="goods-description">{{ card.description }}</p>
-          <button class="button goods-card-btn add-to-cart" :data-id="card.id">
+          <button class="button goods-card-btn add-to-cart" @click="addToCart(card)">
             <span class="button-price">${{ card.price }}</span>
           </button>
         </div>
@@ -173,3 +154,30 @@
     </div>
   </section>
 </template>
+
+<script setup lang="ts">
+import type { CartItem } from '~/models/cart-item.model';
+import type { Product } from '~/models/product.model';
+
+const { data } = await useFetch('/api/new-products')
+
+const cartItems = useCart();
+
+const addToCart = (product: Product) => {
+  const findItem = cartItems.value.find(c => c.id === product.id)
+  if (findItem) {
+    findItem.count++
+
+  } else {
+    const newCartItem: CartItem = {
+      id: product.id,
+      name: product.name,
+      price: parseInt(product.price),
+      count: 1
+    }
+    cartItems.value.push(newCartItem);
+
+  }
+
+}
+</script>
